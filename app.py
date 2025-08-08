@@ -1,8 +1,10 @@
 import sys
 from PyQt6.QtWidgets import QApplication
 from PyQt6.QtGui import QFontDatabase, QFont
+from ui.quizzy import QuizWindow
 from ui.login_form import LoginForm
 from ui.main_window import MainWindow
+from ui.noteq_ai import NodeQWindow
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
@@ -17,4 +19,5 @@ if __name__ == "__main__":
 
     login = LoginForm()
     login.show()
+ 
     sys.exit(app.exec())
