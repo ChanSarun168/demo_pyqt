@@ -117,7 +117,7 @@ class MainWindow(QMainWindow):
         quizzy_card = CardWidget(
             "image/material-symbols_quiz-rounded.png",
             "Quizzy",
-            "Project Manager",
+            "Your Study Buddy",
             "Practice what you've learned. Get auto-generated exercises to help you prepare for exams and track your progress.",
             "#a9dfbf"  # Light green
         )
