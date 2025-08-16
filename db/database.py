@@ -7,6 +7,7 @@ class Database:
         self._connect()
         self._create_user_table()
         self._create_question_table()
+        self._create_history_table()
         self.seed_questions()
 
     def _connect(self):
@@ -83,6 +84,39 @@ class Database:
     def get_all_questions(self):
         cursor = self.conn.cursor()
         cursor.execute("SELECT question, option_a, option_b, option_c, option_d, correct_answer FROM questions")
+        return cursor.fetchall()
+
+    # ---------- HISTORY TABLE ----------
+    def _create_history_table(self):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+        CREATE TABLE IF NOT EXISTS history (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT NOT NULL,
+            subject TEXT NOT NULL,
+            score INTEGER NOT NULL,
+            total_questions INTEGER NOT NULL,
+            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP
+        )
+        ''')
+        self.conn.commit()
+
+    def save_history(self, username, subject, score, total_questions):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            INSERT INTO history (username, subject, score, total_questions)
+            VALUES (?, ?, ?, ?)
+        ''', (username, subject, score, total_questions))
+        self.conn.commit()
+
+    def get_history(self, username):
+        cursor = self.conn.cursor()
+        cursor.execute('''
+            SELECT subject, score, total_questions, timestamp
+            FROM history
+            WHERE username=?
+            ORDER BY timestamp DESC
+        ''', (username,))
         return cursor.fetchall()
 
     # ---------- CLOSE CONNECTION ----------

@@ -22,7 +22,7 @@ class OpenAIWorker(QThread):
     def run(self):
         try:
             response = client.chat.completions.create(
-                model="gpt-5",  # change if you want another model
+                model="gpt-3.5-turbo",  # change if you want another model
                 messages=[
                     {"role": "system", "content": "You are a helpful study assistant."},
                     {"role": "user", "content": self.prompt}

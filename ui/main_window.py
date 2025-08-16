@@ -1,21 +1,17 @@
 from PyQt6.QtWidgets import (
-    QMainWindow, QLabel, QWidget, QVBoxLayout, QHBoxLayout, 
+    QMainWindow, QLabel, QWidget, QVBoxLayout, QHBoxLayout,
     QGraphicsDropShadowEffect, QPushButton
 )
 from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QPixmap, QColor
 from ui.quizzy import QuizWindow
-from ui.noteq_ai import NodeQWindow  # Import the NodeQWindow class
+from ui.noteq_ai import NodeQWindow
+from ui.history_window import HistoryWindow
 
 class CardWidget(QWidget):
     def __init__(self, icon_path, title, subtitle, description, button_color):
         super().__init__()
-        self.setStyleSheet("""
-            CardWidget {
-                background-color: transparent;
-            }
-        """)
-
+        self.setStyleSheet("CardWidget {background-color: transparent;}")
         card_container = QWidget()
         card_container.setStyleSheet("""
             background-color: #f5f5f5;
@@ -36,15 +32,8 @@ class CardWidget(QWidget):
 
         icon_container = QLabel()
         icon_container.setFixedSize(40, 40)
-        icon_container.setStyleSheet(f"""
-            background-color: {button_color};
-            border-radius: 20px;
-            padding: 5px;
-        """)
-
-        pixmap = QPixmap(icon_path).scaled(
-            24, 24, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation
-        )
+        icon_container.setStyleSheet(f"background-color: {button_color}; border-radius: 20px; padding: 5px;")
+        pixmap = QPixmap(icon_path).scaled(24, 24, Qt.AspectRatioMode.KeepAspectRatio, Qt.TransformationMode.SmoothTransformation)
         icon_container.setPixmap(pixmap)
         icon_container.setAlignment(Qt.AlignmentFlag.AlignCenter)
         layout.addWidget(icon_container)
@@ -69,11 +58,7 @@ class CardWidget(QWidget):
 
         arrow_button = QPushButton()
         arrow_button.setFixedSize(30, 30)
-        arrow_button.setStyleSheet(f"""
-            background-color: {button_color};
-            border: none;
-            border-radius: 15px;
-        """)
+        arrow_button.setStyleSheet(f"background-color: {button_color}; border: none; border-radius: 15px;")
         layout.addWidget(arrow_button)
 
         card_container_layout = QHBoxLayout(card_container)
@@ -82,15 +67,11 @@ class CardWidget(QWidget):
         main_layout = QVBoxLayout(self)
         main_layout.addWidget(card_container)
 
-
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, username=None):
         super().__init__()
-        self.setStyleSheet("""
-            MainWindow {
-                background-color: white;
-            }
-        """)
+        self.username = username
+        self.setStyleSheet("MainWindow {background-color: white;}")
         self.setWindowTitle("Node Q")
         self.resize(556, 691)
 
@@ -109,7 +90,7 @@ class MainWindow(QMainWindow):
             "Node Q",
             "Your AI Assistant",
             "Use AI to study smarter. Generate questions from your lesson notes and keep important points organized for quick review.",
-            "#a3bffa"  # Light purple
+            "#a3bffa"
         )
         node_q_card.mousePressEvent = lambda event: self.open_node_q_window()
         main_layout.addWidget(node_q_card)
@@ -119,10 +100,20 @@ class MainWindow(QMainWindow):
             "Quizzy",
             "Your Study Buddy",
             "Practice what you've learned. Get auto-generated exercises to help you prepare for exams and track your progress.",
-            "#a9dfbf"  # Light green
+            "#a9dfbf"
         )
         quizzy_card.mousePressEvent = lambda event: self.open_quiz()
         main_layout.addWidget(quizzy_card)
+
+        history_card = CardWidget(
+            "image/history_icon.png",
+            "History",
+            "Your Quiz Records",
+            "See your past quiz attempts and scores.",
+            "#f7c873"
+        )
+        history_card.mousePressEvent = lambda event: self.open_history()
+        main_layout.addWidget(history_card)
 
         self.setCentralWidget(central_widget)
 
@@ -130,7 +121,12 @@ class MainWindow(QMainWindow):
         self.node_q_window = NodeQWindow(main_window=self)
         self.node_q_window.show()
         self.close()
+
     def open_quiz(self):
-        self.quiz_window = QuizWindow(main_window=self)
+        self.quiz_window = QuizWindow(main_window=self, username=self.username)
         self.quiz_window.show()
         self.hide()
+
+    def open_history(self):
+        self.history_window = HistoryWindow(username=self.username, parent=self)
+        self.history_window.show()

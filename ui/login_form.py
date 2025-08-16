@@ -102,7 +102,8 @@ class LoginForm(QWidget):
         self.close()
 
     def open_main_window(self):
-        # Open the MainWindow (main application screen) and close the login form
-        self.main_window = MainWindow()
+        username = self.input_username.text()  # get the username
+        self.main_window = MainWindow(username=username)  # pass username
         self.main_window.show()
         self.close()
+
